@@ -114,11 +114,11 @@ from .models import Product, CartItem
 #     cart_items = CartItem.objects.all()
 #     cart_total = sum(item.total() for item in cart_items)
 #     return render(request, 'cart.html', {'cart_items': cart_items, 'cart_total': cart_total})
-
+@login_required
 def cart(request):
-    cart_items = CartItem.objects.all()  # or filter(user=request.user) if per-user
-    subtotal = sum(item.total() for item in cart_items)
-    shipping = 10 if subtotal > 0 else 0  # example flat rate shipping
+    cart_items = CartItem.objects.filter(user=request.user)
+    subtotal = sum(item.total_price for item in cart_items)  # ← fix here
+    shipping = 10 if subtotal > 0 else 0
     total = subtotal + shipping
 
     return render(request, "cart.html", {
@@ -129,13 +129,27 @@ def cart(request):
     })
 
 
+
+
 # @login_required
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
+from .models import Product, CartItem
+
+@login_required
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
-    cart_item, created = CartItem.objects.get_or_create(product=product)
+    
+    # Assign the logged-in user
+    cart_item, created = CartItem.objects.get_or_create(
+        product=product,
+        user=request.user  # <-- crucial fix
+    )
+    
     if not created:
         cart_item.quantity += 1
         cart_item.save()
+    
     return redirect('cart')
 
 
@@ -185,9 +199,67 @@ def logout_view(request):
     return redirect('indexfun')  # 
 
 
+from .models import UserProfile, Product, CartItem, BillingDetails, Order, OrderItem, Contact
+from .forms import BillingDetailsForm
+# Checkout
+@login_required
+def checkout(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    if not cart_items.exists():
+        messages.warning(request, "Your cart is empty!")
+        return redirect('cart')
+
+    subtotal = sum(item.total_price for item in cart_items)
+    shipping = 10 if subtotal > 0 else 0
+    total = subtotal + shipping
+
+    billing_details = BillingDetails.objects.filter(user=request.user).first()
+
+    if request.method == 'POST':
+        form = BillingDetailsForm(request.POST, instance=billing_details)
+        if form.is_valid():
+            billing = form.save(commit=False)
+            billing.user = request.user
+            billing.save()
+
+            # Create Order
+            order = Order.objects.create(
+                user=request.user,
+                total_amount=total,
+                total_quantity=sum(item.quantity for item in cart_items),
+                shipping_address=billing.address
+            )
+
+            # Create OrderItems
+            for item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity,
+                    price=item.product.price
+                )
+
+            # Clear cart
+            cart_items.delete()
+            messages.success(request, "Order placed successfully!")
+            return redirect('order_summary', order_id=order.id)
+    else:
+        form = BillingDetailsForm(instance=billing_details)
+
+    return render(request, 'checkout.html', {
+        'cart_items': cart_items,
+        'subtotal': subtotal,
+        'shipping': shipping,
+        'total': total,
+        'form': form
+    })
+from django.contrib import messages
 
 
-
+@login_required
+def order_summary(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    return render(request, "order_summary.html", {"order": order})
 
 
 

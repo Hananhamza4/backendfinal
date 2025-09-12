@@ -165,9 +165,18 @@
 						<form action="{% url 'add_to_cart' product.id %}" method="post">
 							{% csrf_token %}
 							<input type="number" name="quantity" value="1" min="1">
-							<button type="submit" class="cart-btn">
-								<i class="fas fa-shopping-cart"></i> Add to Cart
-							</button>
+							<button type="submit" class="cart-btn" 
+	style="background: linear-gradient(135deg, #28a745, #218838); 
+		   color: #fff; 
+		   border: none; 
+		   padding: 10px 20px; 
+		   border-radius: 30px; 
+		   font-weight: 600; 
+		   cursor: pointer; 
+		   transition: all 0.3s ease;">
+	<i class="fas fa-shopping-cart"></i> Add to Cart
+</button>
+
 						</form>
 					
 						<p><strong>Categories: </strong>{{ product.category }}</p>

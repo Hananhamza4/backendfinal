@@ -23,6 +23,7 @@ urlpatterns = [
     path("update_cart/<int:cart_item_id>/", views.update_cart, name="update_cart"),
     path('userdeatails', views.userprofile, name='userprofile'),
     path('logout', views.logout_view, name='logout_view'),
+        path('order_summary/<int:order_id>/', views.order_summary, name='order_summary'),
 
 
 
