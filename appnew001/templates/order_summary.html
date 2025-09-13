@@ -1,56 +1,3 @@
-<!-- {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Order Summary</title>
-    <link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/css/main.css' %}">
-</head>
-<body>
-    <div class="container mt-5">
-        <h2 class="mb-4">Order Summary</h2>
-        
-        <p><strong>Order ID:</strong> #{{ order.id }}</p>
-        <p><strong>Order Date:</strong> {{ order.created_at|date:"M d, Y H:i" }}</p>
-        <p><strong>Total Quantity:</strong> {{ order.total_quantity }}</p>
-        <p><strong>Total Amount:</strong> ${{ order.total_amount }}</p>
-        <p><strong>Shipping Address:</strong> {{ order.shipping_address }}</p>
-        <p><strong>Payment Status:</strong> {% if order.is_paid %}Paid{% else %}Pending{% endif %}</p>
-
-        <h4 class="mt-4">Items:</h4>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Subtotal</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in order.items.all %}
-                <tr>
-                    <td>{{ item.product.name }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>${{ item.price }}</td>
-                    {% comment %} <td>${{ item.quantity|multiply:item.price }}</td> {% endcomment %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <a href="{% url 'shop' %}" class="btn btn-primary mt-3">Continue Shopping</a>
-    </div>
-
-    <script src="{% static 'assets/js/jquery-1.11.3.min.js' %}"></script>
-    <script src="{% static 'assets/bootstrap/js/bootstrap.min.js' %}"></script>
-</body>
-</html> -->
-
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -62,72 +9,100 @@
     <link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/main.css' %}">
     <style>
-        .order-summary-card {
-            background: #fff;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            padding: 30px;
-            transition: 0.3s;
+        body {
+            background: #f7f9fc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .order-summary-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 25px rgba(0,0,0,0.12);
+        .order-summary-card {
+            background: linear-gradient(145deg, #ffffff, #f1f3f6);
+            border-radius: 20px;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.1);
+            padding: 35px;
+            margin-bottom: 40px;
         }
         .order-summary-card h2 {
             font-weight: 700;
-            color: #333;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+            color: #222;
+            border-bottom: 3px solid #e0e0e0;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
         }
-        .order-summary-details p {
-            font-size: 15px;
-            margin: 6px 0;
+        .order-detail-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        .order-summary-details strong {
+        .order-detail-box strong {
             color: #444;
         }
-        .order-summary-card table {
-            border-radius: 10px;
+        .table {
+            border-radius: 15px;
             overflow: hidden;
+            background: #fff;
         }
-        .order-summary-card th {
-            background: #f8f9fa;
+        .table thead {
+            background: #343a40;
+            color: #fff;
             text-transform: uppercase;
             font-size: 13px;
         }
+        .table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .table tbody tr:hover {
+            background: #e9f5ff;
+        }
         .btn-custom {
-            background: linear-gradient(135deg, #28a745, #218838);
+            background: linear-gradient(135deg, #007bff, #0056b3);
             color: #fff;
-            border-radius: 30px;
+            border-radius: 40px;
             font-weight: 600;
-            padding: 10px 20px;
+            padding: 12px 25px;
             transition: all 0.3s ease;
             text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
         .btn-custom:hover {
-            background: linear-gradient(135deg, #218838, #1e7e34);
-            transform: scale(1.05);
+            background: linear-gradient(135deg, #0056b3, #003f7f);
+            transform: translateY(-2px);
             color: #fff;
         }
+        .quote-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: #fff3cd;
+            border-left: 6px solid #ffc107;
+            border-radius: 10px;
+            font-style: italic;
+            color: #856404;
+        }
+        .btn-custom {
+    padding: 10px 20px;
+    margin: 0 15px; /* 👈 ensures space between buttons */
+    border-radius: 8px;
+    display: inline-block;
+}
+
     </style>
 </head>
 <body>
     <div class="container mt-5">
         <div class="order-summary-card">
-            <h2>Order Summary</h2>
+            <h2>🧾 Order Summary</h2>
             
             <div class="order-summary-details">
-                <p><strong>Order ID:</strong> #{{ order.id }}</p>
-                <p><strong>Order Date:</strong> {{ order.created_at|date:"M d, Y H:i" }}</p>
-                <p><strong>Total Quantity:</strong> {{ order.total_quantity }}</p>
-                <p><strong>Total Amount:</strong> ${{ order.total_amount }}</p>
-                <p><strong>Shipping Address:</strong> {{ order.shipping_address }}</p>
-                <p><strong>Payment Status:</strong> {% if order.is_paid %}✅ Paid{% else %}⌛ Pending{% endif %}</p>
+                <div class="order-detail-box"><strong>Order ID:</strong> #{{ order.id }}</div>
+                <div class="order-detail-box"><strong>Order Date:</strong> {{ order.created_at|date:"M d, Y H:i" }}</div>
+                <div class="order-detail-box"><strong>Total Quantity:</strong> {{ order.total_quantity }}</div>
+                <div class="order-detail-box"><strong>Total Amount:</strong> ${{ order.total_amount }}</div>
+                <div class="order-detail-box"><strong>Shipping Address:</strong> {{ order.shipping_address }}</div>
+                <div class="order-detail-box"><strong>Payment Status:</strong> {% if order.is_paid %}✅ Paid{% else %}⌛ Pending{% endif %}</div>
             </div>
 
-            <h4 class="mt-4">Items:</h4>
-            <table class="table table-bordered">
+            <h4 class="mt-4">📦 Ordered Items</h4>
+            <table class="table table-hover">
                 <thead>
                     <tr>
                         <th>Product</th>
@@ -137,20 +112,65 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in order.items.all %}
+                    {% for item in items %}
                     <tr>
                         <td>{{ item.product.name }}</td>
                         <td>{{ item.quantity }}</td>
                         <td>${{ item.price }}</td>
-                        {% comment %} <td>${{ item.quantity|multiply:item.price }}</td> {% endcomment %}
+                        <td>${{ item.subtotal }}</td>
                     </tr>
                     {% endfor %}
+                    
+                    <tr class="table-secondary">
+                        <td colspan="3" class="text-right"><strong>Subtotal</strong></td>
+                        <td><strong>${{ subtotal }}</strong></td>
+                    </tr>
+                    <tr class="table-secondary">
+                        <td colspan="3" class="text-right"><strong>Shipping</strong></td>
+                        <td><strong>$10.00</strong></td>
+                    </tr>
+                    <tr class="table-secondary">
+                        <td colspan="3" class="text-right"><strong>Total</strong></td>
+                        <td><strong>${{ subtotal|add:10 }}</strong></td>
+                    </tr>
+                    
                 </tbody>
+                
             </table>
 
-            <a href="{% url 'shop' %}" class="btn-custom mt-3 d-inline-block">
-                <i class="fas fa-shopping-bag"></i> Pay Now
-            </a>
+
+            <div class="text-center mt-4 d-flex justify-content-center">
+                <a href="{% url 'shop' %}" class="btn-custom me-3">
+                    💳 Pay Now
+                </a>
+                
+            </div>
+            <a href="#" class="btn-custom" onclick="confirmHome(event)">⬅ Go Home</a>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function confirmHome(e) {
+    e.preventDefault(); // stop link
+    Swal.fire({
+        title: '🏠 Are you sure?',
+        text: "Do you really want to go back home?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Go Home',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "{% url 'indexfun' %}";
+        }
+    });
+}
+</script>
+
+                
+
+            <div class="quote-box mt-4">
+                “Thank you for shopping with us! Your satisfaction is our priority. 🌟”
+            </div>
         </div>
     </div>
 

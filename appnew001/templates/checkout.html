@@ -12,6 +12,58 @@
 	<link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap.min.css' %}">
 	<link rel="stylesheet" href="{% static 'assets/css/main.css' %}">
 	<link rel="stylesheet" href="{% static 'assets/css/responsive.css' %}">
+
+	<style>
+		.checkout-card {
+			background: #fff;
+			border-radius: 15px;
+			box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+			padding: 25px;
+			margin-bottom: 20px;
+			transition: all 0.3s ease;
+		}
+		.checkout-card:hover {
+			transform: translateY(-3px);
+			box-shadow: 0 6px 25px rgba(0,0,0,0.12);
+		}
+		.checkout-card h5 {
+			font-weight: 600;
+			color: #333;
+			margin-bottom: 15px;
+		}
+		.order-details {
+			width: 100%;
+			background: #fdfdfd;
+			border-radius: 10px;
+			overflow: hidden;
+		}
+		.order-details th {
+			background: #f8f9fa;
+			font-size: 14px;
+			text-transform: uppercase;
+			padding: 12px;
+		}
+		.order-details td {
+			padding: 12px;
+			font-size: 15px;
+		}
+		.boxed-btn {
+			background: linear-gradient(135deg, #ff7e5f, #feb47b);
+			color: #fff;
+			border: none;
+			padding: 12px 25px;
+			border-radius: 30px;
+			font-size: 16px;
+			font-weight: 600;
+			cursor: pointer;
+			transition: all 0.3s ease;
+		}
+		.boxed-btn:hover {
+			background: linear-gradient(135deg, #feb47b, #ff7e5f);
+			transform: scale(1.05);
+			color: #fff;
+		}
+	</style>
 </head>
 <body>
 	
@@ -19,89 +71,34 @@
 	<div class="checkout-section mt-150 mb-150">
 		<div class="container">
 			<div class="row">
-				<!-- Billing + Shipping -->
+				
+				<!-- Billing -->
 				<div class="col-lg-8">
-					<div class="checkout-accordion-wrap">
-						<div class="accordion" id="accordionExample">
-
-							<!-- Billing -->
-							<div class="card single-accordion">
-								<div class="card-header" id="headingOne">
-									<h5 class="mb-0">
-										<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true">
-											Billing Address
-										</button>
-									</h5>
-								</div>
-								<div id="collapseOne" class="collapse show" data-parent="#accordionExample">
-									<div class="card-body">
-										<div class="billing-address-form">
-											<form method="POST" action="{% url 'checkout' %}">
-												{% csrf_token %}
-												{{ form.as_p }}
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<!-- Shipping -->
-							<div class="card single-accordion">
-								<div class="card-header" id="headingTwo">
-									<h5 class="mb-0">
-										<button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo">
-											Shipping Address
-										</button>
-									</h5>
-								</div>
-								<div id="collapseTwo" class="collapse" data-parent="#accordionExample">
-									<div class="card-body">
-										<div class="shipping-address-form">
-											<p>If shipping address is same as billing, leave blank.</p>
-											<p><input type="text" name="shipping_address" placeholder="Shipping Address"></p>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<!-- Payment -->
-							<div class="card single-accordion">
-								<div class="card-header" id="headingThree">
-									<h5 class="mb-0">
-										<button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree">
-											Payment Details
-										</button>
-									</h5>
-								</div>
-								<div id="collapseThree" class="collapse" data-parent="#accordionExample">
-									<div class="card-body">
-										<div class="card-details">
-											<p><input type="text" name="card_name" placeholder="Name on Card"></p>
-											<p><input type="text" name="card_number" placeholder="Card Number"></p>
-											<p><input type="text" name="expiry" placeholder="MM/YY"></p>
-											<p><input type="text" name="cvv" placeholder="CVV"></p>
-										</div>
-									</div>
-								</div>
-							</div>
-
-						</div><!-- end accordion -->
+					<div class="checkout-card">
+						<h5>Billing Address</h5>
+						<div class="billing-address-form">
+							<form method="POST" action="{% url 'checkout' %}">
+								{% csrf_token %}
+								{{ form.as_p }}
 					</div>
+				</div>
 				</div>
 
 				<!-- Order Summary -->
 				<div class="col-lg-4">
-					<div class="order-details-wrap">
-						<table class="order-details">
+					<div class="checkout-card">
+						<h5>Your Order</h5>
+						<table class="order-details table table-bordered">
 							<thead>
 								<tr>
-									<th>Your order Details</th>
-									<th>Price</th>
+									<th>Product</th>
+									<th>Total</th>
 								</tr>
 							</thead>
 							<tbody class="order-details-body">
 								{% for item in cart_items %}
 								<tr>
-									<td>{{ item.product.name }} x {{ item.quantity }}</td>
+									<td>{{ item.product.name }} × {{ item.quantity }}</td>
 									<td>${{ item.total_price }}</td>
 								</tr>
 								{% empty %}
@@ -112,39 +109,30 @@
 							</tbody>
 							<tbody class="checkout-details">
 								<tr>
-									<td>Subtotal</td>
+									<td><strong>Subtotal</strong></td>
 									<td>${{ subtotal }}</td>
 								</tr>
 								<tr>
-									<td>Shipping</td>
+									<td><strong>Shipping</strong></td>
 									<td>${{ shipping }}</td>
 								</tr>
 								<tr>
-									<td>Total</td>
-									<td>${{ total }}</td>
+									<td><strong>Total</strong></td>
+									<td><strong>${{ total }}</strong></td>
 								</tr>
 							</tbody>
 						</table>
-						<button type="submit" class="boxed-btn w-100" 
-	style="background: linear-gradient(135deg, #ff7e5f, #feb47b); 
-		   color: #fff; 
-		   border: none; 
-		   padding: 12px 25px; 
-		   border-radius: 30px; 
-		   font-size: 16px; 
-		   font-weight: 600; 
-		   cursor: pointer; 
-		   transition: all 0.3s ease;">
-	<i class="fas fa-credit-card"></i> Place Order
-</button>
-
-						</form> <!-- closes form -->
+						<button type="submit" class="boxed-btn w-100">
+							<i class="fas fa-credit-card"></i> Place Order
+						</button>
+						</form> <!-- closes billing form -->
 					</div>
 				</div>
+
 			</div>
 		</div>
 	</div>
-	<!-- end check out section -->
+	<!-- end checkout section -->
 
 	<script src="{% static 'assets/js/jquery-1.11.3.min.js' %}"></script>
 	<script src="{% static 'assets/bootstrap/js/bootstrap.min.js' %}"></script>

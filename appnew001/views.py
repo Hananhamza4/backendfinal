@@ -136,14 +136,37 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from .models import Product, CartItem
 
-@login_required
+# @login_required
+# def add_to_cart(request, product_id):
+#     product = get_object_or_404(Product, pk=product_id)
+    
+#     # Assign the logged-in user
+#     cart_item, created = CartItem.objects.get_or_create(
+#         product=product,
+#         user=request.user  # <-- crucial fix
+#     )
+    
+#     if not created:
+#         cart_item.quantity += 1
+#         cart_item.save()
+    
+#     return redirect('cart')
+from django.shortcuts import get_object_or_404, redirect
+from .models import Product, CartItem
+from django.contrib import messages
+
 def add_to_cart(request, product_id):
+    # Check if user is authenticated
+    if not request.user.is_authenticated:
+        # Redirect to login page if not logged in
+        return redirect('user_login')
+    
+    # User is logged in, proceed to add product to cart
     product = get_object_or_404(Product, pk=product_id)
     
-    # Assign the logged-in user
     cart_item, created = CartItem.objects.get_or_create(
         product=product,
-        user=request.user  # <-- crucial fix
+        user=request.user
     )
     
     if not created:
@@ -151,7 +174,7 @@ def add_to_cart(request, product_id):
         cart_item.save()
     
     return redirect('cart')
-
+    
 
 
 # Update quantity in cart
@@ -260,6 +283,24 @@ from django.contrib import messages
 def order_summary(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, "order_summary.html", {"order": order})
+
+#chatgpt  
+
+def order_summary(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    items = order.items.all()
+
+    subtotal = 0
+    for item in items:
+        item.subtotal = item.quantity * item.price
+        subtotal += item.subtotal
+
+    return render(request, "order_summary.html", {
+        "order": order,
+        "items": items,
+        "subtotal": subtotal,
+    })
+
 
 
 

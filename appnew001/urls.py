@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.urls import path
+from . import views
 
 urlpatterns = [
     
@@ -24,6 +26,7 @@ urlpatterns = [
     path('userdeatails', views.userprofile, name='userprofile'),
     path('logout', views.logout_view, name='logout_view'),
         path('order_summary/<int:order_id>/', views.order_summary, name='order_summary'),
+    
 
 
 
